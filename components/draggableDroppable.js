@@ -1,17 +1,18 @@
 import { useState } from "react";
-import {useDraggable, useDroppable} from "@dnd-kit/core";
+import {useDraggable, useDroppable, useDndMonitor} from "@dnd-kit/core";
 import styled from "styled-components";
 
 import DraggableCopy from "./draggableCopy";
 import EmptyDroppable from "./emptyDroppable";
 
 const Box = styled.div`
-    overflow: hidden;
     position: relative;
 `;
 
 const BoxInner = styled.div`
     height: 100%;
+    overflow: hidden;
+    position: relative;
 `;
 
 const BoxReaction = styled.span`
@@ -45,7 +46,7 @@ const BoxOver = styled.span`
     inset: 0;
     opacity: 0;
     background-color: rgba(32,32,32, 0.4);
-    animation: fadeIn 0.2s linear 0.2s forwards;
+    animation: fadeIn 0.2s linear 0.1s forwards;
 
     @keyframes fadeIn {
       to {
@@ -64,7 +65,8 @@ const Image = styled.img`
     ${({ $toFade }) => $toFade &&
       `
         & {
-           animation: fadeIn 0.25s linear forwards;
+          opacity: 0;
+          animation: fadeIn 0.4s linear forwards;
         }
       `
     }
@@ -72,7 +74,8 @@ const Image = styled.img`
     ${({ $toFadeOut }) => $toFadeOut &&
       `
         & {
-           animation: fadeIn 0.25s linear forwards reverse;
+          opacity: 1;
+          animation: fadeIn 0.4s linear forwards reverse;
         }
       `
     }
@@ -103,19 +106,10 @@ const Image = styled.img`
     }
 `;
 
-const BoxToDrag = styled.div`
-    position: absolute;
-    width: 64px;
-    height: 64px;
-    background-color: transparent;
-    z-index: -1;
-    top:  0;
-    left: 0;
-`
-
 export default function DraggableDroppable({ image, sectionId }) {
   const [position, setPosition] = useState({ width: 0, height: 0 });
-  const {isDragging, attributes, listeners, setNodeRef, setActivatorNodeRef } = useDraggable({
+  const [activate, setActivate] = useState(false);
+  const {isDragging, attributes, listeners, setNodeRef, setActivatorNodeRef, transform } = useDraggable({
     id: `${sectionId}-${image.id}`,
   });
 
@@ -132,7 +126,17 @@ export default function DraggableDroppable({ image, sectionId }) {
       top: e.clientY - rect.top,
       left: e.clientX - rect.left
     });
+    requestAnimationFrame(() => setActivate(true));
   }
+
+  useDndMonitor({
+    onDragEnd() {
+      setActivate(false);
+    },
+    onDragCancel() {
+      setActivate(false);
+    },
+  })
 
   return (
     <>
@@ -158,9 +162,6 @@ export default function DraggableDroppable({ image, sectionId }) {
               {...attributes}
               loading='lazy'
             />
-            <BoxToDrag 
-              ref={setNodeRef} 
-            />
           </>) : (
             <EmptyDroppable />
           )}
@@ -174,13 +175,15 @@ export default function DraggableDroppable({ image, sectionId }) {
             <BoxOver />
           )}
         </BoxInner>
+        <DraggableCopy 
+          url={image.url} 
+          alt={image.alt} 
+          active={activate} 
+          ref={setNodeRef}
+          position={position}
+          transform={transform}
+        />
       </Box> 
-      <DraggableCopy 
-        position={position} 
-        url={image.url} 
-        alt={image.alt} 
-        activeId={isDragging && image.id}
-      />
     </> 
   )
 }

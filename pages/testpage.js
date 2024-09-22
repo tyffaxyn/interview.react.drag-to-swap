@@ -2,7 +2,8 @@ import { useState } from 'react';
 import Head from "next/head";
 import PrintPages from "../components/printPage";
 import styled from "styled-components";
-import {DndContext} from "@dnd-kit/core";
+import { DndContext } from "@dnd-kit/core";
+import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 
 import { 
   swapOneItemGetNewList, 
@@ -74,7 +75,7 @@ export default function TestPage() {
         <h1>Cars and cartoon characters</h1>
         <p>Hardback Photobook last edited on Thursday 13 April 2022 at 16:28</p>
       </PageHeader>
-      <DndContext id="print-pages" onDragEnd={handleDragEnd}>
+      <DndContext id="print-pages" modifiers={[restrictToWindowEdges]} onDragEnd={handleDragEnd}>
         <PrintPages data={data} />
       </DndContext>  
     </div>
