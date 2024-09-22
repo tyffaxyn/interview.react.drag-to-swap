@@ -88,7 +88,7 @@ export default function Page({ title, id, images, grid }) {
       </Title>
       <Grid $inputColor={color} $count={grid}>
         {Array.from({ length: grid }).map((_, i) => {
-          const image = images[i] || { id: id + i };
+          const image = images[i];
 
           return (
             <DraggableDroppable 

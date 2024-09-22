@@ -16,3 +16,4 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Notes
 
+Tested on  Google Chrome - Version 127.0.6533.100
