@@ -1,13 +1,23 @@
+import { useState } from 'react';
 import Head from "next/head";
-import PrintPage from "../components/printPage";
+import PrintPages from "../components/printPage";
 import styled from "styled-components";
+import {DndContext} from "@dnd-kit/core";
+
+import { 
+  swapOneItemGetNewList, 
+  swapTwoItemGetNewList, 
+  getNewAndCleanUpData, 
+  mockData, 
+  removeItemGetNewList
+} from "../utils/dataAndHelpers";
 
 const PageHeader = styled.div`
-  width: 600px;
+  max-width: 732px;
   margin: auto;
   border-bottom: 1px solid #e4e4e4;
   margin-bottom: 42px;
-  padding-bottom: 24px;
+  padding: 0 16px 24px 16px;
 
   h1 {
     font-weight: 700;
@@ -24,7 +34,35 @@ const PageHeader = styled.div`
   }
 `;
 
-export default function Testpage() {
+export default function TestPage() {
+  const [data, setData] = useState(mockData);
+
+  function handleDragEnd(event) {
+    const {active, over} = event;
+    if (active && over && active.id !== over.id) {
+      const newData = getNewAndCleanUpData(data);
+      const [fromBlockId, fromImageId] = (active.id || '').split('-');
+      const [toBlockId, toImageId] = (over.id || '').split('-');
+      const fromBlock = newData.find(({ id }) => id == fromBlockId);
+      const toBlock = newData.find(({ id }) => id == toBlockId);
+
+      if (over.data?.current?.empty) {
+        fromBlock.images = removeItemGetNewList(fromBlock.images, fromImageId);
+        toBlock.images = swapOneItemGetNewList(toBlock.images, toImageId, fromImageId, "expand");
+      } else {
+        if (fromBlockId === toBlockId) {
+          fromBlock.images = swapTwoItemGetNewList(fromBlock.images, fromImageId, toImageId);
+        } else {
+          fromBlock.images = swapOneItemGetNewList(fromBlock.images, fromImageId, toImageId, "fade");
+          toBlock.images = swapOneItemGetNewList(toBlock.images, toImageId, fromImageId, "expand");
+        }
+      }
+
+      setData(newData);
+    }
+    return;
+  }
+
   return (
     <div>
       <Head>
@@ -33,33 +71,12 @@ export default function Testpage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <PageHeader>
-        <h1>Trip to the Beach</h1>
+        <h1>Cars and cartoon characters</h1>
         <p>Hardback Photobook last edited on Thursday 13 April 2022 at 16:28</p>
       </PageHeader>
-      <PrintPage
-        data={[
-          {
-            title: "Front Print",
-            images: [
-              "https://videodelivery.net/775b1b7196b2c126b8dc343416211fdb/thumbnails/thumbnail.jpg?height=1080",
-            ],
-          },
-          {
-            title: "Page 2",
-            images: [
-              "https://videodelivery.net/9ad2bb839e4e3cc1074e5d73b0a0379b/thumbnails/thumbnail.jpg?height=1080",
-              "https://imagedelivery.net/66_qOEcY2UwnECf5ON9PhQ/bde5b129-52ba-4f43-b3f4-97591952ea00/large",
-            ],
-          },
-          {
-            title: "Page 3",
-            images: [
-              "https://videodelivery.net/91097538e177847ebeb934a492e146e9/thumbnails/thumbnail.jpg?height=1080",
-              "https://imagedelivery.net/66_qOEcY2UwnECf5ON9PhQ/b73c2865-7a02-408b-654d-89ce2512ae00/large",
-            ],
-          },
-        ]}
-      />
+      <DndContext id="print-pages" onDragEnd={handleDragEnd}>
+        <PrintPages data={data} />
+      </DndContext>  
     </div>
   );
 }

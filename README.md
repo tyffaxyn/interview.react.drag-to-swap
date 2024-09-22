@@ -16,8 +16,3 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Notes
 
-Feel free to modify the source code in anyway that you see fit.
-
----
-
-<sup>Popsa.com</sup>

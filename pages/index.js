@@ -31,7 +31,7 @@ export default function Home() {
         <meta name="description" content="" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div>
+      <main>
         <Intro>
           <Image src="/logo.svg" alt="Popsa" width="127" height="32" />
           <h1>Welcome to the React frontend test</h1>
@@ -39,7 +39,7 @@ export default function Home() {
             <a>Start test</a>
           </Link>
         </Intro>
-      </div>
+      </main>
     </>
   );
 }

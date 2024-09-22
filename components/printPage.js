@@ -1,69 +1,21 @@
 import styled from "styled-components";
 import Actions from "./actions";
 
-const Wrapper = styled.div`
-  width: 600px;
-  margin: auto;
+import Page from "./page";
+
+const Container = styled.div`
   color: #585858;
+  max-width: 732px;
+  margin: 44px auto;
+  padding: 0 16px;
 `;
 
-const PrintWrapper = styled.div``;
-
-const Header = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const Title = styled.div`
-  font-style: normal;
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 20px;
-`;
-
-const PageLayout = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  background: #2778a5;
-  border-radius: 8px;
-  padding: 20px;
-  margin: 17px 0 42px;
-  justify-content: space-between;
-`;
-
-const PrintPhoto = styled.div`
-  width: calc(50% - 10px);
-
-  img {
-    max-width: 100%;
-  }
-`;
-
-export default function PrintPage({ data }) {
+export default function PrintPages({ data }) {
   return (
-    <>
-      <Wrapper>
-        {Object.values(data).map((entry, i) => {
-          return (
-            <PrintWrapper key={i}>
-              <Header>
-                <Title>{entry.title}</Title>
-                <Actions />
-              </Header>
-              <PageLayout>
-                {entry.images.map((image) => {
-                  return (
-                    <PrintPhoto key={image}>
-                      <img src={image} alt="" />
-                    </PrintPhoto>
-                  );
-                })}
-              </PageLayout>
-            </PrintWrapper>
-          );
+      <Container>
+        {data.map(({ id, title, images, grid }, i) =>{
+          return <Page key={id} {...{ title, id, images, grid }} />
         })}
-      </Wrapper>
-    </>
+      </Container>
   );
 }
